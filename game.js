@@ -49,14 +49,14 @@ function createToy() {
     };
 }
 
-
-// Draw a toy with gradient effect and shrinking/growing
+// Draw a toy with gradient effect and shrinking/growing (Bonus feature for reflective gradient)
 function drawToys() {
     toys.forEach(toy => {
         if (!toy.collected) {
-            let gradient = ctx.createRadialGradient(toy.x, toy.y, toy.radius * 0.5, toy.x, toy.y, toy.radius);
-            gradient.addColorStop(0, 'yellow');
-            gradient.addColorStop(1, 'orange');
+            let gradient = ctx.createRadialGradient(toy.x, toy.y, toy.radius * 0.3, toy.x, toy.y, toy.radius);
+            gradient.addColorStop(0, 'white');  // Shiny inner color for reflective surface
+            gradient.addColorStop(0.5, 'yellow');  // Bright yellow middle
+            gradient.addColorStop(1, 'orange');  // Orange outer color for contrast
             ctx.fillStyle = gradient;
             ctx.beginPath();
             ctx.arc(toy.x, toy.y, toy.radius, 0, Math.PI * 2, false);
@@ -98,7 +98,7 @@ function updateToys() {
                     toy.radius = toy.initialRadius;
                     toy.shrinking = true;  // Start the cycle again
                     toy.rising = false;
-                    unhappySound.play();  // Play unhappy sound when it touches the top edge
+                   
                 }
             }
         }
@@ -166,10 +166,12 @@ window.addEventListener("keydown", function(event) {
 
 // Check if a toy is collected
 function collectToy() {
+    let toyCollected = false;
     toys.forEach((toy, index) => {
         if (!toy.collected && checkCollision(character, toy)) {
             toy.collected = true;
             score++;
+            toyCollected = true;
             updateScore();
             happySound.play();
 
@@ -178,6 +180,10 @@ function collectToy() {
             toys.push(createToy()); // Add a new toy
         }
     });
+    // Play unhappy sound if no toy was collected
+    if (!toyCollected) {
+        unhappySound.play();
+    }
 }
 
 // Check for collision between diver and toy
